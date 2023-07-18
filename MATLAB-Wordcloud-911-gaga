@@ -1,0 +1,24 @@
+README:
+>CREATE EXCEL SHEET WITH 911 LYRICS AND TITLE IT "911-GAGA"
+>THE SHEET SHOULD INCLUDE TEXT ONLY LYRICS OF THE SONG
+>SET WORKING DIRECTORY TO THE FILE WHERE THE SHEET IS STORED. 
+>RESTART MATLAB TO ENSURE WORKING DIRECTORY GETS SAVED TO ROUTE TO PREFERRED FOLDER.
+
+filename = "911-gaga.xlsx";
+tbl = readtable(filename,'TextType','string');
+head(tbl)
+str = tbl.TextData;
+documents = tokenizedDocument(str);
+compoundScores = vaderSentimentScores(documents);
+idx = compoundScores > 0;
+strPositive = str(idx);
+strNegative = str(~idx);
+
+figure
+subplot(1,2,1)
+wordcloud(strPositive);
+title("Positive Sentiment")
+
+subplot(1,2,2)
+wordcloud(strNegative);
+title("Negative Sentiment")
