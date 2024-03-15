@@ -11,25 +11,24 @@ library(magrittr) # needs to be run every time you start R and want to use %>%
 library(dplyr)    # alternatively, this also loads %>%
 library(tibble)
 
-#Chat GPT Code
 # set the working directory to where the file is located
 setwd("C:/Users/m2rad/OneDrive/Documents/Graduate School/23 Spring")
 
 # read the file and store the contents in a variable called "diary_entries"
-trump <- readLines("trump.txt")  
+diary <- readLines("diary.txt")  
 
 # create a tibble with one word per row
-trump_tibble <- tibble(text = trump) %>% unnest_tokens(word, text)
+diary_tibble <- tibble(text = diary) %>% unnest_tokens(word, text)
 
 # load the NRC lexicon
 nrc_lexicon <- get_sentiments("nrc")
 
-trump_nrc <- trump_tibble %>% inner_join(nrc_lexicon)
-sentiment_counts <- trump_nrc %>% 
+diary_nrc <- diary_tibble %>% inner_join(nrc_lexicon)
+sentiment_counts <- diary_nrc %>% 
   group_by(sentiment) %>% 
   summarize(count = n())
 
 ggplot(sentiment_counts, aes(x = sentiment, y = count)) +
   geom_bar(stat = "identity", fill = "steelblue") +
-  labs(title = "Trump Sentiment Scores", x = "Sentiment", y = "Frequency")
+  labs(title = "Diary Sentiment Scores", x = "Sentiment", y = "Frequency")
 
