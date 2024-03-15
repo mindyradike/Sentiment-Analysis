@@ -1,0 +1,34 @@
+# Pre-Flight --------------------------------------------------------------
+
+library(rtweet)
+library(ggplot2)
+#library(tidyverse)
+library(quanteda.textstats)
+library(readr)
+library(stringr)
+library(tidytext)
+library(magrittr) # needs to be run every time you start R and want to use %>%
+library(dplyr)    # alternatively, this also loads %>%
+library(tibble)
+
+# set the working directory to where the file is located
+setwd("C:/Users/m2rad/OneDrive/Documents/Graduate School/23 Spring")
+
+# read the file and store the contents in a variable called "diary_entries"
+poem <- readLines("poem.txt")  
+
+# create a tibble with one word per row
+poem_tibble <- tibble(text = poem) %>% unnest_tokens(word, text)
+
+# load the NRC lexicon
+nrc_lexicon <- get_sentiments("nrc")
+
+poem_nrc <- poem_tibble %>% inner_join(nrc_lexicon)
+sentiment_counts <- poem_nrc %>% 
+  group_by(sentiment) %>% 
+  summarize(count = n())
+
+ggplot(sentiment_counts, aes(x = sentiment, y = count)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Poem Sentiment Scores", x = "Sentiment", y = "Frequency")
+
