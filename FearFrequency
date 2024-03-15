@@ -1,0 +1,43 @@
+# Pre-Flight --------------------------------------------------------------
+
+library(rtweet)
+library(ggplot2)
+library(quanteda.textstats)
+library(readr)
+library(stringr)
+library(tidytext)
+library(magrittr)
+library(dplyr)  
+library(tibble)
+library(vctrs)
+
+# set the working directory to where the file is located
+setwd("C:/Users/m2rad/OneDrive/Documents/Graduate School/23 Spring")
+
+# read the file and store the contents in a variable called "diary_entries"
+trump <- readLines("trump.txt")  
+
+# create a tibble with one word per row
+trump_tibble <- tibble(text = trump) %>% unnest_tokens(word, text)
+
+# load the NRC lexicon
+nrc_lexicon <- get_sentiments("nrc")
+
+# get sentiment scores for each word
+# get sentiment scores for each word
+sentiment_scores <- trump_tibble %>%
+  inner_join(nrc_lexicon) %>%
+  group_by(word, sentiment) %>%
+  summarize(count = n()) %>%
+  filter(sentiment == "negative")
+
+sentiment_scores$count <- as.numeric(sentiment_scores$count)
+
+# create a bar chart
+ggplot(sentiment_scores, aes(x = word, y = count)) + 
+  geom_col(fill = "#9933FF") +
+  xlab("Word") +
+  ylab("Frequency") +
+  ggtitle("Frequency of Negative Sentiment for Each Word in Speech") +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1))
